@@ -6,6 +6,8 @@ syntax = "proto3";
 
 package accrescent.directory.v1;
 
+import "buf/validate/validate.proto";
+
 option java_multiple_files = true;
 option java_package = "app.accrescent.directory.v1";
 
@@ -22,5 +24,11 @@ message ReleaseChannel {
   }
 
   // A well-known release channel.
-  optional WellKnown well_known = 1;
+  optional WellKnown well_known = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).enum = {
+      defined_only: true
+      not_in: [0]
+    }
+  ];
 }
