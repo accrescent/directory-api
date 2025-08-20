@@ -6,11 +6,16 @@ syntax = "proto3";
 
 package accrescent.directory.v1beta1;
 
+import "buf/validate/validate.proto";
+
 option java_multiple_files = true;
 option java_package = "app.accrescent.directory.v1beta1";
 
 // Download size information for an app.
 message DownloadSize {
   // The total size in bytes of all uncompressed assets in this download.
-  optional uint32 uncompressed_total = 1;
+  optional uint32 uncompressed_total = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).uint32.gt = 0
+  ];
 }

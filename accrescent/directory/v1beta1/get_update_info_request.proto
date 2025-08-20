@@ -8,18 +8,34 @@ package accrescent.directory.v1beta1;
 
 import "accrescent/directory/v1beta1/device_attributes.proto";
 import "accrescent/directory/v1beta1/release_channel.proto";
+import "buf/validate/validate.proto";
 
 option java_multiple_files = true;
 option java_package = "app.accrescent.directory.v1beta1";
 
 // Request defining parameters for retrieving an app's available update info.
 message GetUpdateInfoRequest {
-  // The application ID to check for updates. Required.
-  optional string app_id = 1;
+  // The application ID to check for updates.
+  optional string app_id = 1 [
+    (buf.validate.field).required = true,
+    // According to
+    // https://developer.android.com/build/configure-app-module#set-application-id,
+    // the app ID must conform to the following rules:
+    //
+    // 1. It must have at least two segments (one or more dots).
+    // 2. Each segment must start with a letter.
+    // 3. All characters must be alphanumeric or an underscore [a-zA-Z0-9_].
+    //
+    // The maximum length is imposed by us to set a reasonable limit.
+    (buf.validate.field).string = {
+      pattern: "^([a-zA-Z][a-zA-Z0-9_]*\\.)+[a-zA-Z][a-zA-Z0-9_]*$"
+      max_bytes: 128
+    }
+  ];
 
   // The base version code of the app to check for updates from, i.e., the
-  // currently installed version. Required.
-  optional uint32 base_version_code = 2;
+  // currently installed version.
+  optional uint32 base_version_code = 2 [(buf.validate.field).required = true];
 
   // The current device's hardware and OS attributes used to determine app
   // compatibility. If unspecified, compatibility information will not be

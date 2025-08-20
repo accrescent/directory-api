@@ -8,14 +8,30 @@ package accrescent.directory.v1beta1;
 
 import "accrescent/directory/v1beta1/device_attributes.proto";
 import "accrescent/directory/v1beta1/release_channel.proto";
+import "buf/validate/validate.proto";
 
 option java_multiple_files = true;
 option java_package = "app.accrescent.directory.v1beta1";
 
 // Request defining parameters for retrieving an app listing.
 message GetAppListingRequest {
-  // The application ID of the listing to retrieve. Required.
-  optional string app_id = 1;
+  // The application ID of the listing to retrieve.
+  optional string app_id = 1 [
+    (buf.validate.field).required = true,
+    // According to
+    // https://developer.android.com/build/configure-app-module#set-application-id,
+    // the app ID must conform to the following rules:
+    //
+    // 1. It must have at least two segments (one or more dots).
+    // 2. Each segment must start with a letter.
+    // 3. All characters must be alphanumeric or an underscore [a-zA-Z0-9_].
+    //
+    // The maximum length is imposed by us to set a reasonable limit.
+    (buf.validate.field).string = {
+      pattern: "^([a-zA-Z][a-zA-Z0-9_]*\\.)+[a-zA-Z][a-zA-Z0-9_]*$"
+      max_bytes: 128
+    }
+  ];
 
   // The current device's hardware and OS attributes used to determine app
   // compatibility, download size, etc. If unspecified, some app listing fields

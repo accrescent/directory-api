@@ -7,14 +7,18 @@ syntax = "proto3";
 package accrescent.directory.v1beta1;
 
 import "accrescent/directory/v1beta1/split_download_info.proto";
+import "buf/validate/validate.proto";
 
 option java_multiple_files = true;
 option java_package = "app.accrescent.directory.v1beta1";
 
 message AppDownloadInfo {
   // The total download size in bytes for this app or app update.
-  optional uint32 download_size = 1;
+  optional uint32 download_size = 1 [
+    (buf.validate.field).required = true,
+    (buf.validate.field).uint32.gt = 0
+  ];
 
   // Download info for each individual split APK
-  repeated SplitDownloadInfo split_download_info = 2;
+  repeated SplitDownloadInfo split_download_info = 2 [(buf.validate.field).repeated.min_items = 1];
 }
