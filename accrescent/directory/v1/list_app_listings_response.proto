@@ -14,6 +14,9 @@ option java_package = "app.accrescent.directory.v1";
 // Response to requesting a list of app listings.
 message ListAppListingsResponse {
   // The app listings matching the request parameters.
+  //
+  // TODO: Require that each listing has the same app ID?
+  // TODO: Require that each listing language is unique?
   repeated AppListing listings = 1;
 
   // An opaque token which, if passed to another invocation of ListAppListings,
